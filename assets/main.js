@@ -1,0 +1,197 @@
+(function () {
+  "use strict";
+  var docEl = document.documentElement;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var anim = !reduce;
+
+  /* ---------- intro : rideau de garage, une seule fois par session ---------- */
+  var shutter = document.getElementById("shutter");
+  if (shutter) {
+    var shutterSeen = false;
+    try { shutterSeen = sessionStorage.getItem("adpShutter") === "1"; } catch (e) {}
+    var glow = document.getElementById("shutterGlow");
+    var killShutter = function () {
+      if (shutter && shutter.parentNode) shutter.parentNode.removeChild(shutter);
+      if (glow && glow.parentNode) glow.parentNode.removeChild(glow);
+      shutter = null; glow = null;
+    };
+    if (shutterSeen || reduce) {
+      killShutter();
+    } else {
+      try { sessionStorage.setItem("adpShutter", "1"); } catch (e) {}
+      setTimeout(killShutter, 3100);
+      ["click", "touchstart", "keydown", "wheel"].forEach(function (ev) {
+        window.addEventListener(ev, killShutter, { once: true, passive: true });
+      });
+    }
+  }
+
+  /* ---------- reveals: safety nets FIRST ---------- */
+  var reveals = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+  var revealAll = function () { for (var i = 0; i < reveals.length; i++) reveals[i].classList.add("in"); };
+  var unlock = function () { docEl.classList.remove("anim"); revealAll(); };
+
+  if (anim && reveals.length) {
+    docEl.classList.add("anim");
+    setTimeout(revealAll, 1600);
+    window.addEventListener("scroll", function once() {
+      revealAll();
+      window.removeEventListener("scroll", once);
+    }, { passive: true, once: true });
+  } else {
+    revealAll();
+  }
+  window.addEventListener("error", unlock);
+  setTimeout(function () { window.removeEventListener("error", unlock); }, 8000);
+
+  try {
+    var hasGSAP = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
+
+    var y = document.getElementById("year");
+    if (y) y.textContent = new Date().getFullYear();
+
+    var hd = document.getElementById("hd");
+    var burger = document.getElementById("burger");
+    var nav = document.getElementById("nav");
+    var closeNav = function () { if (nav) nav.classList.remove("open"); if (burger) burger.setAttribute("aria-expanded", "false"); };
+    if (burger && nav) {
+      burger.addEventListener("click", function () { burger.setAttribute("aria-expanded", String(nav.classList.toggle("open"))); });
+      nav.addEventListener("click", function (e) { if (e.target.tagName === "A") closeNav(); });
+    }
+    window.addEventListener("keydown", function (e) { if (e.key === "Escape") closeNav(); });
+    if (hd) {
+      var onScroll = function () { hd.classList.toggle("stuck", window.scrollY > 28); };
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    }
+
+    if (anim && reveals.length && "IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (ents) {
+        ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
+      }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+      reveals.forEach(function (el) { io.observe(el); });
+    }
+
+    /* ---------- compteurs animés (gains chiffrés) ----------
+       Les valeurs finales sont dans le HTML : si rien ne se déclenche,
+       l'affichage reste correct. On ne remet à 0 qu'au moment d'animer. */
+    var nums = Array.prototype.slice.call(document.querySelectorAll(".stat-num[data-to]"));
+    var runCount = function (el) {
+      var to = parseFloat(el.getAttribute("data-to")) || 0;
+      var dur = 1100, start = null;
+      var snap = setTimeout(function () { el.firstChild.nodeValue = String(to); }, 1500);
+      el.firstChild.nodeValue = "0";
+      var frame = function (t) {
+        if (start === null) start = t;
+        var p = Math.min((t - start) / dur, 1);
+        el.firstChild.nodeValue = String(Math.round(to * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) { requestAnimationFrame(frame); }
+        else { clearTimeout(snap); el.firstChild.nodeValue = String(to); }
+      };
+      requestAnimationFrame(frame);
+    };
+    if (nums.length && anim && "IntersectionObserver" in window && typeof requestAnimationFrame === "function") {
+      var nio = new IntersectionObserver(function (ents) {
+        ents.forEach(function (en) { if (en.isIntersecting) { runCount(en.target); nio.unobserve(en.target); } });
+      }, { threshold: 0.55 });
+      nums.forEach(function (el) { nio.observe(el); });
+      /* filet global : quoi qu'il arrive, valeurs finales au bout de 4 s */
+      setTimeout(function () {
+        nums.forEach(function (el) { el.firstChild.nodeValue = el.getAttribute("data-to"); });
+      }, 4000);
+    }
+
+    if (hasGSAP && anim) { window.gsap.registerPlugin(window.ScrollTrigger); }
+  } catch (err) {
+    unlock();
+  }
+
+  /* ---------- carrousels : pastilles de pagination ---------- */
+  var buildDots = function (scroller, itemList, dotsEl) {
+    if (!scroller || !dotsEl || !itemList.length) return;
+    itemList.forEach(function (it, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("aria-label", "Aller a l'element " + (i + 1));
+      b.addEventListener("click", function () {
+        var d = it.getBoundingClientRect().left - scroller.getBoundingClientRect().left;
+        scroller.scrollBy({ left: d - 4, behavior: "smooth" });
+      });
+      dotsEl.appendChild(b);
+    });
+    var dots = dotsEl.children;
+    var sync = function () {
+      var mid = scroller.getBoundingClientRect().left + scroller.clientWidth / 2;
+      var best = 0, bd = Infinity;
+      for (var i = 0; i < itemList.length; i++) {
+        var r = itemList[i].getBoundingClientRect();
+        var d = Math.abs(r.left + r.width / 2 - mid);
+        if (d < bd) { bd = d; best = i; }
+      }
+      for (var j = 0; j < dots.length; j++) dots[j].classList.toggle("on", j === best);
+    };
+    scroller.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    sync();
+  };
+
+  /* ---------- realisations : slider fleches + pastilles ---------- */
+  var gwrap = document.querySelector(".gallery-slider .gwrap");
+  var gtrack = document.getElementById("gtrack");
+  var gprev = document.querySelector(".gnav.gprev");
+  var gnext = document.querySelector(".gnav.gnext");
+  var gitems = gtrack ? Array.prototype.slice.call(gtrack.querySelectorAll(".gitem")) : [];
+  if (gwrap && gtrack && gprev && gnext) {
+    var gstep = function () {
+      var it = gtrack.querySelector(".gitem");
+      var w = it ? it.getBoundingClientRect().width : 300;
+      return (w + 16) * 2;
+    };
+    var gupd = function () {
+      var max = gtrack.scrollWidth - gwrap.clientWidth - 4;
+      gprev.disabled = gwrap.scrollLeft <= 4;
+      gnext.disabled = gwrap.scrollLeft >= max;
+    };
+    gprev.addEventListener("click", function () { gwrap.scrollBy({ left: -gstep(), behavior: "smooth" }); });
+    gnext.addEventListener("click", function () { gwrap.scrollBy({ left: gstep(), behavior: "smooth" }); });
+    gwrap.addEventListener("scroll", gupd, { passive: true });
+    window.addEventListener("resize", gupd);
+    gupd();
+  }
+  if (gwrap) buildDots(gwrap, gitems, document.getElementById("galDots"));
+
+  /* ---------- prestations : carrousel mobile + pastilles ---------- */
+  var craftList = document.querySelector(".craft-list");
+  if (craftList) {
+    buildDots(craftList, Array.prototype.slice.call(craftList.querySelectorAll("li")), document.getElementById("craftDots"));
+  }
+
+  /* ---------- contact form (no backend) — brouillon e-mail ---------- */
+  var form = document.getElementById("cform");
+  var note = document.getElementById("fnote");
+  if (form && note) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      note.className = "fnote"; note.textContent = "";
+      var d = new FormData(form);
+      var name = (d.get("name") || "").toString().trim();
+      var email = (d.get("email") || "").toString().trim();
+      var msg = (d.get("message") || "").toString().trim();
+      if (!name || !msg || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        note.classList.add("err");
+        note.textContent = "Merci d'indiquer votre nom, un e-mail valide et votre demande.";
+        return;
+      }
+      var body = "Nom : " + name + "\n" +
+        "E-mail : " + email + "\n" +
+        "Telephone : " + ((d.get("phone") || "").toString().trim() || "-") + "\n" +
+        "Vehicule : " + ((d.get("vehicle") || "").toString().trim() || "-") + "\n" +
+        "Objectif : " + ((d.get("goal") || "").toString().trim() || "-") + "\n\n" + msg;
+      window.location.href = "mailto:contact@adperformance78.fr?subject=" +
+        encodeURIComponent("Demande de devis - " + name) + "&body=" + encodeURIComponent(body);
+      note.classList.add("ok");
+      note.textContent = "Votre messagerie va s'ouvrir avec la demande pre-remplie. Vous pouvez aussi nous ecrire en DM sur Instagram.";
+      form.reset();
+    });
+  }
+})();
