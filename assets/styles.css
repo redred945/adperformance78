@@ -623,59 +623,78 @@ html.anim .reveal.in .ticks li:nth-child(5) { animation-delay: .24s; }
   background: #000; overflow: hidden;
 }
 html.intro-done #neon { display: none; }
-#neon.lift { animation: neonOut var(--t-slow) var(--ease) forwards; }
+#neon.lift { animation: neonOut .42s var(--ease) forwards; }
+
+/* Bloom plein cadre : la pièce s'éclaire quand le tube prend enfin */
 #neon::before {
   content: ""; position: absolute; inset: 0; z-index: 0;
-  background: radial-gradient(56% 40% at 50% 50%, rgba(255, 255, 255, .14), rgba(255, 255, 255, 0) 72%);
-  opacity: 0; animation: neonHaze 2.7s steps(1, end) .3s forwards;
+  background: radial-gradient(58% 44% at 50% 50%, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 70%);
+  opacity: 0; animation: neonBloom 1.5s steps(1, end) .12s forwards;
 }
 #neon::after {
   content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: repeating-linear-gradient(180deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px);
+  background: repeating-linear-gradient(180deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px);
   mix-blend-mode: overlay; opacity: .45;
 }
-.neon-logo { position: relative; z-index: 1; width: min(460px, 78vw); }
+
+/* le boîtier vibre pendant l'amorçage */
+.neon-logo {
+  position: relative; z-index: 1; width: min(460px, 78vw);
+  animation: neonBuzz 1.5s steps(1, end) .12s forwards;
+}
 .neon-logo img {
   width: 100%; height: auto; display: block;
   opacity: 0;
-  animation: neonOn 2.7s steps(1, end) .3s forwards;
+  animation: neonOn 1.5s steps(1, end) .12s forwards;
 }
-/* le tube galère à s'amorcer : à-coups, faux départs, puis il tient */
+
+/* Trois tentatives sèches, puis ça claque et ça tient. */
 @keyframes neonOn {
-  0%,   6%  { opacity: 0;   filter: brightness(.3); }
-  7%        { opacity: .55; filter: brightness(1.4) drop-shadow(0 0 10px rgba(255,255,255,.6)); }
-  8%        { opacity: 0;   filter: brightness(.3); }
-  14%       { opacity: 0;   filter: brightness(.3); }
-  15%       { opacity: .8;  filter: brightness(1.7) drop-shadow(0 0 16px rgba(255,255,255,.9)); }
-  16%       { opacity: .05; filter: brightness(.3); }
-  17%       { opacity: .5;  filter: brightness(1.3) drop-shadow(0 0 8px rgba(255,255,255,.5)); }
-  18%       { opacity: 0;   filter: brightness(.3); }
-  28%       { opacity: 0;   filter: brightness(.3); }
-  29%       { opacity: .95; filter: brightness(1.9) drop-shadow(0 0 22px rgba(255,255,255,1)); }
-  30%       { opacity: .1;  filter: brightness(.35); }
-  31%       { opacity: .7;  filter: brightness(1.5) drop-shadow(0 0 12px rgba(255,255,255,.7)); }
-  32%       { opacity: .12; filter: brightness(.35); }
-  33%       { opacity: .85; filter: brightness(1.6) drop-shadow(0 0 16px rgba(255,255,255,.85)); }
-  34%       { opacity: .2;  filter: brightness(.4); }
-  42%       { opacity: .2;  filter: brightness(.4); }
-  43%       { opacity: 1;   filter: brightness(2) drop-shadow(0 0 28px rgba(255,255,255,1)); }
-  45%       { opacity: .35; filter: brightness(.55); }
-  47%       { opacity: 1;   filter: brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,.85)); }
-  49%       { opacity: .6;  filter: brightness(.9) drop-shadow(0 0 10px rgba(255,255,255,.5)); }
-  52%       { opacity: 1;   filter: brightness(1.35) drop-shadow(0 0 22px rgba(255,255,255,.8)); }
-  55%       { opacity: .82; filter: brightness(1.05) drop-shadow(0 0 14px rgba(255,255,255,.55)); }
-  60%       { opacity: 1;   filter: brightness(1.2) drop-shadow(0 0 20px rgba(255,255,255,.7)); }
-  66%       { opacity: .92; filter: brightness(1.08) drop-shadow(0 0 16px rgba(255,255,255,.55)); }
-  72%, 100% { opacity: 1;   filter: brightness(1.12) drop-shadow(0 0 24px rgba(255,255,255,.7)); }
+  0%,  7%   { opacity: 0;   filter: brightness(.3); }
+  8%        { opacity: 1;   filter: brightness(2.3) drop-shadow(0 0 26px rgba(255,255,255,.95)); }
+  11%       { opacity: 0;   filter: brightness(.3); }
+
+  21%       { opacity: 0;   filter: brightness(.3); }
+  22%       { opacity: .95; filter: brightness(2.1) drop-shadow(0 0 22px rgba(255,255,255,.9)); }
+  24%       { opacity: .06; filter: brightness(.35); }
+  25%       { opacity: .8;  filter: brightness(1.8) drop-shadow(0 0 16px rgba(255,255,255,.8)); }
+  27%       { opacity: 0;   filter: brightness(.3); }
+
+  37%       { opacity: 0;   filter: brightness(.3); }
+  /* l'amorçage : surexposition franche */
+  39%       { opacity: 1;   filter: brightness(3) drop-shadow(0 0 60px rgba(255,255,255,1)); }
+  44%       { opacity: 1;   filter: brightness(1.9) drop-shadow(0 0 38px rgba(255,255,255,.95)); }
+  48%       { opacity: .72; filter: brightness(1) drop-shadow(0 0 14px rgba(255,255,255,.5)); }
+  53%       { opacity: 1;   filter: brightness(1.6) drop-shadow(0 0 30px rgba(255,255,255,.85)); }
+  58%       { opacity: .9;  filter: brightness(1.15) drop-shadow(0 0 18px rgba(255,255,255,.6)); }
+  64%, 100% { opacity: 1;   filter: brightness(1.14) drop-shadow(0 0 26px rgba(255,255,255,.75)); }
 }
-@keyframes neonHaze {
-  0%,  28% { opacity: 0; }
-  30%      { opacity: .35; }
-  34%      { opacity: .05; }
-  43%      { opacity: .55; }
-  49%      { opacity: .12; }
-  60%      { opacity: .6; }
-  100%     { opacity: .5; }
+@keyframes neonBloom {
+  0%,  7%  { opacity: 0; }
+  8%       { opacity: .3; }
+  11%      { opacity: 0; }
+  21%      { opacity: 0; }
+  22%      { opacity: .26; }
+  27%      { opacity: 0; }
+  37%      { opacity: 0; }
+  39%      { opacity: 1; }    /* la pièce s'allume d'un coup */
+  44%      { opacity: .62; }
+  48%      { opacity: .18; }
+  53%      { opacity: .5; }
+  58%      { opacity: .34; }
+  64%, 100% { opacity: .42; }
+}
+/* vibration mécanique, uniquement pendant les à-coups */
+@keyframes neonBuzz {
+  0%,  7%   { transform: none; }
+  8%        { transform: translate3d(-1.5px, 1px, 0); }
+  11%       { transform: none; }
+  22%       { transform: translate3d(1.5px, -1px, 0); }
+  25%       { transform: translate3d(-1px, 1.5px, 0); }
+  27%       { transform: none; }
+  39%       { transform: translate3d(2px, -1.5px, 0) scale(1.012); }
+  44%       { transform: translate3d(-1px, .5px, 0) scale(1.004); }
+  48%, 100% { transform: none; }
 }
 @keyframes neonOut { to { opacity: 0; visibility: hidden; } }
 

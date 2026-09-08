@@ -4,11 +4,16 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var anim = !reduce;
 
-  /* ---------- intro : le logo qui s'allume (néon), une fois par session ---------- */
+  /* ---------- intro : le logo qui s'allume (néon), une fois par session ----------
+     L'animation dure 1.5s + 0.12s de retard = 1.62s. On enchaîne le fondu
+     juste après, puis on retire le calque. ?neon dans l'URL force le rejeu. */
+  var NEON_LIFT = 1700;   /* fin de l'animation -> on lève le calque */
+  var NEON_KILL = 2160;   /* fin du fondu (.42s) -> on retire du DOM */
   var neon = document.getElementById("neon");
   if (neon) {
+    var replay = /[?&]neon\b/.test(location.search);
     var seen = false;
-    try { seen = sessionStorage.getItem("adpNeon") === "1"; } catch (e) {}
+    try { seen = !replay && sessionStorage.getItem("adpNeon") === "1"; } catch (e) {}
     var killNeon = function () {
       if (neon && neon.parentNode) neon.parentNode.removeChild(neon);
       neon = null;
@@ -16,9 +21,10 @@
     if (seen || reduce) {
       killNeon();
     } else {
+      docEl.classList.remove("intro-done");
       try { sessionStorage.setItem("adpNeon", "1"); } catch (e) {}
-      setTimeout(function () { if (neon) neon.classList.add("lift"); }, 3250);
-      setTimeout(killNeon, 3950);
+      setTimeout(function () { if (neon) neon.classList.add("lift"); }, NEON_LIFT);
+      setTimeout(killNeon, NEON_KILL);
       ["click", "touchstart", "keydown", "wheel"].forEach(function (ev) {
         window.addEventListener(ev, killNeon, { once: true, passive: true });
       });
