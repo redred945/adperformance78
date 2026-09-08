@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Maquette visuelle — AD Performance</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#08090b" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css?v=16" />
+<style>
+  /* ---- chrome de la maquette ---- */
+  .demo-bar {
+    position: fixed; left: 0; right: 0; top: 0; z-index: 500;
+    background: rgba(8,9,11,.86); backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--line-2);
+    padding: 10px var(--gutter);
+    display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap;
+    font-family: var(--mono); font-size: var(--fs-mini); color: var(--ink-3); letter-spacing: .08em;
+  }
+  .demo-bar b { color: var(--ink); font-weight: 700; text-transform: uppercase; letter-spacing: .16em; }
+  .demo-bar a { color: var(--accent-2); border-bottom: 1px solid var(--line-2); }
+  .demo-bar a:hover { color: var(--ink); border-color: var(--ink); }
+  body { padding-top: 42px; }
+
+  .note {
+    max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter);
+    font-family: var(--mono); font-size: var(--fs-mini); line-height: 1.7;
+    color: var(--ink-3); letter-spacing: .02em;
+  }
+  .note b { color: var(--accent-2); font-weight: 700; }
+  .sec-label {
+    max-width: var(--wrap); margin: 0 auto var(--sp-4); padding: 0 var(--gutter);
+    font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: .2em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .sec-label span { color: var(--accent); }
+
+  /* ---- 1. hero parallaxe + titre en cascade ---- */
+  .dhero { position: relative; overflow: hidden; isolation: isolate; min-height: 92svh; display: flex; align-items: flex-end; }
+  .dhero-bg { position: absolute; inset: -12% 0 -12% 0; z-index: -2; width: 100%; height: 124%; object-fit: cover; object-position: 68% 55%; will-change: transform; }
+  .dhero::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(to right, rgba(8,9,11,.9) 0%, rgba(8,9,11,.45) 38%, rgba(8,9,11,0) 78%),
+      linear-gradient(to top, var(--s-0) 0%, rgba(8,9,11,.7) 22%, rgba(8,9,11,0) 62%);
+  }
+  .dhero-in { position: relative; z-index: 1; width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter) clamp(3rem,6vw,5rem); }
+  .dh1 { font-size: clamp(2.4rem, 1.2rem + 5vw, 5.2rem); font-weight: 800; line-height: .98; letter-spacing: -.045em; text-transform: uppercase; margin: var(--sp-4) 0 0; }
+  .dh1 .ln { display: block; overflow: hidden; }
+  .dh1 .ln > span { display: block; will-change: transform; }
+
+  /* ---- 2. bandeau chiffres ---- */
+  .figs { border-top: 1px solid var(--line); background: var(--s-1); padding: var(--sp-8) 0; }
+  .figs-in { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); display: grid; grid-template-columns: repeat(4,1fr); gap: var(--sp-5); }
+  .fig .n { font-family: var(--mono); font-weight: 700; font-size: clamp(2rem,1.2rem+2.6vw,3.2rem); letter-spacing: -.03em; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
+  .fig .n i { font-style: normal; font-size: .42em; color: var(--ink-3); margin-left: .18em; }
+  .fig p { margin-top: var(--sp-2); font-size: var(--fs-sm); color: var(--ink-2); }
+  @media (max-width: 760px) { .figs-in { grid-template-columns: repeat(2,1fr); gap: var(--sp-6); } }
+
+  /* ---- 3. réalisations en scroll horizontal épinglé ---- */
+  .hs { position: relative; background: var(--s-0); }
+  .hs-vp { height: 100svh; overflow: hidden; display: flex; align-items: center; }
+  .hs-track { display: flex; gap: var(--sp-5); padding: 0 var(--gutter); will-change: transform; }
+  .hs-card {
+    position: relative; flex: 0 0 min(420px, 74vw); aspect-ratio: 3/4;
+    border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--s-2);
+  }
+  .hs-card img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.03) saturate(1.06); }
+  .hs-card figcaption {
+    position: absolute; inset: auto 0 0 0; z-index: 2; padding: var(--sp-8) var(--sp-5) var(--sp-5);
+    background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.2) 34%, rgba(0,0,0,.6) 62%, rgba(0,0,0,.9));
+    color: #fff;
+  }
+  .hs-card h3 { font-size: 1.3rem; }
+  .hs-card em { display: block; margin-top: 4px; font-style: normal; font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: .04em; color: var(--ink-2); }
+  .hs-intro { position: absolute; left: 0; right: 0; top: 0; z-index: 3; padding: var(--sp-7) var(--gutter) 0; max-width: var(--wrap); margin: 0 auto; pointer-events: none; }
+
+  /* ---- 4. banc de puissance ---- */
+  .dyno { border-top: 1px solid var(--line); background: var(--s-1); padding: var(--sp-8) 0; }
+  .dyno-in { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+  .dyno-wrap { position: relative; margin-top: var(--sp-6); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--s-0); padding: var(--sp-5) var(--sp-4) var(--sp-4); overflow: hidden; }
+  .dyno-wrap::after { content:""; position:absolute; inset:0; pointer-events:none; background: radial-gradient(70% 90% at 78% 20%, rgba(255,255,255,.05), transparent 70%); }
+  .dyno svg { width: 100%; height: auto; display: block; }
+  .grid line { stroke: rgba(255,255,255,.07); stroke-width: 1; }
+  .axl { font-family: var(--mono); font-size: 11px; fill: #7b828d; letter-spacing: .08em; }
+  .cv { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .cv-stock { stroke: rgba(255,255,255,.26); stroke-width: 2; stroke-dasharray: 5 5; }
+  .cv-stage { stroke: #fff; stroke-width: 3; filter: drop-shadow(0 0 10px rgba(255,255,255,.45)); }
+  .dyno-key { display: flex; gap: var(--sp-6); flex-wrap: wrap; margin-top: var(--sp-4); font-family: var(--mono); font-size: var(--fs-mini); color: var(--ink-3); letter-spacing: .06em; }
+  .dyno-key i { display: inline-block; width: 22px; height: 0; border-top: 2px solid; margin-right: 8px; vertical-align: middle; }
+  .k-stock i { border-color: rgba(255,255,255,.3); border-top-style: dashed; }
+  .k-stage i { border-color: #fff; border-top-width: 3px; }
+  .dyno-out { position: absolute; right: var(--sp-5); top: var(--sp-5); text-align: right; font-family: var(--mono); }
+  .dyno-out b { display: block; font-size: clamp(1.5rem,1rem+1.6vw,2.2rem); color: #fff; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .dyno-out span { font-size: var(--fs-micro); color: var(--ink-3); letter-spacing: .14em; }
+  @media (max-width: 640px) { .dyno-out { position: static; text-align: left; margin-bottom: var(--sp-4); } }
+
+  .end { padding: var(--sp-8) 0 var(--sp-8); border-top: 1px solid var(--line); }
+
+  /* ---- 5. nappe WebGL ---- */
+  .gl { position: relative; min-height: 88svh; display: flex; align-items: center; overflow: hidden; border-top: 1px solid var(--line); }
+  #glc { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 0; }
+  .gl-in { position: relative; z-index: 1; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); width: 100%; }
+  .gl-in h2, .gl-in .big-p { text-shadow: 0 2px 30px rgba(0,0,0,.8); }
+
+  /* ---- 6. tableau des poids ---- */
+  .wt { width: 100%; border-collapse: collapse; margin-top: var(--sp-5); font-family: var(--font); font-size: var(--fs-sm); }
+  .wt th { text-align: left; font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; padding: 0 var(--sp-4) var(--sp-3) 0; border-bottom: 1px solid var(--line-2); }
+  .wt td { padding: var(--sp-3) var(--sp-4) var(--sp-3) 0; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; }
+  .wt td:nth-child(2) { font-family: var(--mono); color: var(--ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .wt td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .wt .y, .wt .n, .wt .m { font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: .06em; white-space: nowrap; }
+  .wt .y { color: #7fd9a6; } .wt .n { color: #f0846a; } .wt .m { color: var(--ink-3); }
+  @media (max-width: 720px) { .wt thead { display: none; } .wt td { display: block; border: 0; padding: 2px 0; }
+    .wt tr { display: block; padding: var(--sp-4) 0; border-bottom: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <b>Maquette</b>
+  <span>démonstration des effets — aucune de ces pages n'est en ligne sur le site</span>
+  <a href="/">← retour au site réel</a>
+</div>
+
+<!-- 1 ------------------------------------------------------------------ -->
+<section class="dhero">
+  <img class="dhero-bg" id="dbg" src="assets/img/heronew.jpg" alt="" />
+  <div class="dhero-in">
+    <p class="eyebrow">01 — Parallaxe &amp; titre en cascade</p>
+    <h1 class="dh1">
+      <span class="ln"><span>La performance</span></span>
+      <span class="ln"><span>commence par</span></span>
+      <span class="ln"><span>l'exigence.</span></span>
+    </h1>
+  </div>
+</section>
+
+<section class="end" style="border-top:0">
+  <p class="note"><b>Ce que tu vois :</b> l'image du fond défile moins vite que la page (parallaxe), et les trois lignes du titre montent l'une après l'autre depuis un masque. Deux effets classiques mais qui donnent immédiatement de la profondeur. <b>Coût : 0 Ko de framework</b> — GSAP fait 24 Ko et gère tout le reste de la page aussi.</p>
+</section>
+
+<!-- 2 ------------------------------------------------------------------ -->
+<section class="figs">
+  <p class="sec-label"><span>02</span> — Compteurs au défilement</p>
+  <div class="figs-in">
+    <div class="fig"><div class="n" data-to="9">0</div><p>années d'atelier</p></div>
+    <div class="fig"><div class="n" data-to="480">0</div><p>véhicules préparés</p></div>
+    <div class="fig"><div class="n" data-to="46" data-suffix="%">0</div><p>de couple gagné en moyenne</p></div>
+    <div class="fig"><div class="n" data-to="24" data-suffix="h">0</div><p>pour un retour de devis</p></div>
+  </div>
+  <p class="note" style="margin-top:2rem"><b>Note :</b> ces chiffres sont inventés pour la démo. Si on garde le bloc, il me faut les vrais — sinon on le supprime, un chiffre faux sur un site d'artisan ça se voit tout de suite.</p>
+</section>
+
+<!-- 3 ------------------------------------------------------------------ -->
+<section class="hs" id="hs">
+  <div class="hs-vp">
+    <div class="hs-intro">
+      <p class="eyebrow">03 — Défilement horizontal épinglé</p>
+      <h2 style="max-width:16ch">Les réalisations défilent pendant que la page reste fixe.</h2>
+    </div>
+    <div class="hs-track" id="hstrack">
+      <figure class="hs-card"><img src="assets/img/adp-post-01.jpg" alt="" loading="lazy"><figcaption><h3>Audi RS3 8Y</h3><em>Stage 2 · multimap E85 · TCU stock</em></figcaption></figure>
+      <figure class="hs-card"><img src="assets/img/adp-post-03.jpg" alt="" loading="lazy"><figcaption><h3>Audi RS3 8Y</h3><em>TTE700 · multimap · rolling launch</em></figcaption></figure>
+      <figure class="hs-card"><img src="assets/img/entretien-x3m.jpg" alt="" loading="lazy"><figcaption><h3>BMW X3M Compétition</h3><em>Freinage · lignes · entretien</em></figcaption></figure>
+      <figure class="hs-card"><img src="assets/img/adp-post-08.jpg" alt="" loading="lazy"><figcaption><h3>Audi RS4 B9</h3><em>Stage 1+ · SP98 · entretien</em></figcaption></figure>
+      <figure class="hs-card"><img src="assets/img/adp-post-06.jpg" alt="" loading="lazy"><figcaption><h3>BMW M2 N55</h3><em>Stage 2 · SP98</em></figcaption></figure>
+      <figure class="hs-card"><img src="assets/img/adp-post-02.jpg" alt="" loading="lazy"><figcaption><h3>VW Golf 8 GTI 245</h3><em>Stage 1+ · TCU</em></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="end" style="border-top:0">
+  <p class="note"><b>Ce que tu vois :</b> la section se fige et le défilement vertical pilote un déplacement horizontal. C'est l'effet le plus « waouh » de la liste, et le plus adapté à un carrousel de réalisations : on force le visiteur à tout voir au lieu d'espérer qu'il glisse. <b>Sur mobile il faut le désactiver</b> (épingler du scroll casse le geste naturel) — c'est le cas ici, en dessous de 900px on retombe sur le carrousel actuel.</p>
+</section>
+
+<!-- 4 ------------------------------------------------------------------ -->
+<section class="dyno">
+  <div class="dyno-in">
+    <p class="eyebrow">04 — Courbe de banc tracée au défilement</p>
+    <h2 style="max-width:20ch">Le passage au banc, montré au lieu d'être raconté.</h2>
+    <div class="dyno-wrap">
+      <div class="dyno-out">
+        <b id="dnum">360</b><span>CH — GOLF 8 GTI 245</span>
+      </div>
+      <svg viewBox="0 0 800 380" role="img" aria-label="Courbe de puissance avant et après optimisation">
+        <g class="grid">
+          <line x1="60" y1="340" x2="770" y2="340"/><line x1="60" y1="263" x2="770" y2="263"/>
+          <line x1="60" y1="185" x2="770" y2="185"/><line x1="60" y1="108" x2="770" y2="108"/>
+          <line x1="60" y1="30"  x2="770" y2="30"/>
+          <line x1="60" y1="30" x2="60" y2="340"/><line x1="177" y1="30" x2="177" y2="340"/>
+          <line x1="293" y1="30" x2="293" y2="340"/><line x1="410" y1="30" x2="410" y2="340"/>
+          <line x1="527" y1="30" x2="527" y2="340"/><line x1="643" y1="30" x2="643" y2="340"/>
+          <line x1="760" y1="30" x2="760" y2="340"/>
+        </g>
+        <g class="axl">
+          <text x="30" y="344">0</text><text x="20" y="267">100</text><text x="20" y="189">200</text>
+          <text x="20" y="112">300</text><text x="20" y="34">400</text>
+          <text x="46" y="362">1000</text><text x="270" y="362">3000</text>
+          <text x="504" y="362">5000</text><text x="736" y="362">7000</text>
+          <text x="352" y="378" letter-spacing="3">TR/MIN</text>
+        </g>
+        <path id="cvStock" class="cv cv-stock" d="M60,317 C120,300 150,285 177,274 C240,255 265,245 293,232 C355,212 380,203 410,193 C470,178 500,171 527,166 C580,157 615,152 643,150 C690,152 730,159 760,166"/>
+        <path id="cvStage" class="cv cv-stage" d="M60,313 C120,285 150,262 177,239 C240,205 265,185 293,166 C355,135 385,118 410,107 C470,89 500,81 527,76 C580,67 615,63 643,61 C690,66 730,75 760,84"/>
+      </svg>
+      <div class="dyno-key">
+        <span class="k-stock"><i></i>Origine — 245 ch</span>
+        <span class="k-stage"><i></i>Stage 1+ — 360 ch</span>
+      </div>
+    </div>
+    <p class="note" style="margin-top:1.6rem"><b>À arbitrer :</b> tu avais rejeté les mini-courbes des cartes Stage (« c'est moche ») — et tu avais raison, c'étaient des vignettes fausses et illisibles. Ça, c'est autre chose : pleine largeur, tracé au défilement, avec la courbe d'origine en pointillés pour la comparaison. Mais <b>ça n'a de sens que si ce sont de vrais relevés de son banc.</b> Sinon on ne le met pas.</p>
+  </div>
+</section>
+
+<!-- 5 ------------------------------------------------------------------ -->
+<section class="gl" id="gl">
+  <canvas id="glc"></canvas>
+  <div class="gl-in">
+    <p class="eyebrow">05 — WebGL (Three.js)</p>
+    <h2 style="max-width:18ch">Une nappe de lumière calculée en temps réel.</h2>
+    <p class="big-p" style="margin-top:1.2rem">Le fond n'est pas une vidéo ni une image : c'est un shader qui dessine des faisceaux dérivants, image par image. Bouge le curseur dessus.</p>
+  </div>
+</section>
+
+<section class="end" style="border-top:0">
+  <p class="note"><b>Ce que tu vois :</b> un plan plein cadre avec un shader de bruit fractal — des faisceaux qui dérivent, un halo qui suit le pointeur, un vignettage. Ça colle à l'univers atelier / néon. <b>Mais ça coûte 162,8 Ko</b>, soit dix fois le site actuel, plus la charge GPU sur les téléphones d'entrée de gamme. <b>Mon avis : non.</b> Le même rendu à 90 % est faisable en CSS pur (dégradés animés + le grain qu'on a déjà) pour 0 Ko. Ça se justifierait s'il y avait un configurateur 3D de jantes, pas pour une texture de fond.</p>
+</section>
+
+<!-- 6 ------------------------------------------------------------------ -->
+<section class="figs" style="background:var(--s-0)">
+  <p class="sec-label"><span>06</span> — Ce que chaque brique coûte</p>
+  <div class="note" style="max-width:var(--wrap)">
+    <table class="wt">
+      <thead><tr><th>Brique</th><th>Poids gzip</th><th>Ce que ça apporte ici</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>Lenis</td><td>3,6 Ko</td><td>Défilement inertiel — change tout le ressenti</td><td class="y">à prendre</td></tr>
+        <tr><td>SplitType</td><td>4,3 Ko</td><td>Titres révélés lettre par lettre</td><td class="y">à prendre</td></tr>
+        <tr><td>GSAP + ScrollTrigger</td><td>44,6 Ko</td><td>Parallaxe, épinglage, compteurs, tracé de courbe</td><td class="m">si on fait les effets 01/03/04</td></tr>
+        <tr><td>Three.js</td><td>162,8 Ko</td><td>Fond WebGL — faisable à 90 % en CSS</td><td class="n">non</td></tr>
+        <tr><td>View Transitions</td><td>0 Ko</td><td>Transitions entre pages, natif navigateur</td><td class="y">gratuit, à prendre</td></tr>
+        <tr><td>React + ReactDOM</td><td>46,1 Ko</td><td>Rien de visuel — gestion d'état</td><td class="n">non</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1.4rem"><b>Recommandation :</b> Lenis + SplitType + GSAP = <b>52,5 Ko</b> pour les effets 01 à 04. Le site passerait de 16,5 à ~69 Ko — lourd mais tenable, et chaque kilo sert à quelque chose de visible. Three.js et React n'apportent rien ici.</p>
+  </div>
+</section>
+
+<section class="end">
+  <div class="note">
+    <p style="color:var(--ink-2);font-size:var(--fs-sm);font-family:var(--font);line-height:1.6">
+      <b style="color:var(--ink)">Le point de tout ça :</b> tous ces effets tournent en JS classique.
+      Le site reste en HTML statique, le référencement reste intact, l'intro néon continue de
+      s'afficher avant le rendu. React n'aurait rien apporté — aucune de ces animations n'est
+      plus facile ni plus belle en React.
+    </p>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/split-type@0.3.4/umd/index.min.js" defer></script>
+<script defer>
+window.addEventListener("load", function () {
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || typeof gsap === "undefined") return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* 0 — Lenis : défilement inertiel, câblé sur le ticker GSAP
+        (sinon Lenis et ScrollTrigger tournent sur deux horloges et ça saccade) */
+  if (typeof Lenis !== "undefined") {
+    var lenis = new Lenis({ duration: 1.05, smoothWheel: true, syncTouch: false });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+    gsap.ticker.lagSmoothing(0);
+  }
+
+  /* 1 — parallaxe du fond + titre révélé lettre par lettre (SplitType) */
+  gsap.to("#dbg", {
+    yPercent: 12, ease: "none",
+    scrollTrigger: { trigger: ".dhero", start: "top top", end: "bottom top", scrub: true }
+  });
+  if (typeof SplitType !== "undefined") {
+    var st = new SplitType(".dh1 .ln > span", { types: "chars" });
+    gsap.from(st.chars, {
+      yPercent: 110, opacity: 0, duration: .8, ease: "power3.out",
+      stagger: { each: .016, from: "start" }, delay: .2
+    });
+  } else {
+    gsap.from(".dh1 .ln > span", { yPercent: 115, duration: .95, ease: "power3.out", stagger: .09, delay: .15 });
+  }
+
+  /* 2 — compteurs */
+  gsap.utils.toArray(".fig .n").forEach(function (el) {
+    var to = +el.dataset.to, sfx = el.dataset.suffix || "";
+    var o = { v: 0 };
+    ScrollTrigger.create({
+      trigger: el, start: "top 85%", once: true,
+      onEnter: function () {
+        gsap.to(o, {
+          v: to, duration: 1.4, ease: "power2.out",
+          onUpdate: function () { el.textContent = Math.round(o.v) + sfx; },
+          onComplete: function () { el.textContent = to + sfx; }
+        });
+      }
+    });
+  });
+
+  /* 3 — défilement horizontal épinglé (desktop uniquement) */
+  var mm = gsap.matchMedia();
+  mm.add("(min-width: 900px)", function () {
+    var track = document.getElementById("hstrack");
+    var dist = function () { return track.scrollWidth - window.innerWidth + 40; };
+    gsap.to(track, {
+      x: function () { return -dist(); }, ease: "none",
+      scrollTrigger: {
+        trigger: "#hs", start: "top top", end: function () { return "+=" + dist(); },
+        pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1
+      }
+    });
+  });
+
+  /* 4 — tracé de la courbe de banc + chiffre synchronisé */
+  ["#cvStock", "#cvStage"].forEach(function (sel) {
+    var p = document.querySelector(sel), L = p.getTotalLength();
+    gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+    gsap.to(p, {
+      strokeDashoffset: 0, ease: "none",
+      scrollTrigger: { trigger: ".dyno-wrap", start: "top 78%", end: "bottom 72%", scrub: .6 }
+    });
+  });
+  var num = document.getElementById("dnum"), no = { v: 245 };
+  gsap.to(no, {
+    v: 360, ease: "none",
+    onUpdate: function () { num.textContent = Math.round(no.v); },
+    scrollTrigger: { trigger: ".dyno-wrap", start: "top 78%", end: "bottom 72%", scrub: .6 }
+  });
+});
+</script>
+
+<!-- 5 — nappe WebGL. Chargée seulement au-dessus de 900px et seulement
+     quand la section approche : les téléphones ne paient jamais les 163 Ko. -->
+<script type="module">
+const host = document.getElementById('gl');
+const cv = document.getElementById('glc');
+
+/* Déclenchement par calcul de position plutôt qu'IntersectionObserver :
+   l'IO est inerte dans certains contextes (navigateurs embarqués, webviews)
+   et on se retrouverait avec un canvas noir sans le savoir. */
+const near = (marge) => {
+  const r = host.getBoundingClientRect();
+  return r.top < innerHeight + marge && r.bottom > -marge;
+};
+
+if (host && cv && window.innerWidth >= 900
+    && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let started = false;
+  const boot = async () => {
+    if (started || !near(300)) return;
+    started = true;
+    removeEventListener('scroll', boot);
+    const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
+
+    const rnd = new THREE.WebGLRenderer({ canvas: cv, antialias: false, alpha: false });
+    rnd.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    const scene = new THREE.Scene();
+    const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const uni = {
+      uT: { value: 0 },
+      uR: { value: new THREE.Vector2(1, 1) },
+      uM: { value: new THREE.Vector2(.5, .5) }
+    };
+    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+      uniforms: uni,
+      vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position,1.); }`,
+      fragmentShader: `
+        precision highp float;
+        uniform float uT; uniform vec2 uR; uniform vec2 uM; varying vec2 vUv;
+        float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
+        float noise(vec2 p){
+          vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
+          return mix(mix(hash(i), hash(i+vec2(1,0)), f.x),
+                     mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y);
+        }
+        float fbm(vec2 p){ float v=0., a=.5; for(int i=0;i<5;i++){ v+=a*noise(p); p*=2.03; a*=.5; } return v; }
+        void main(){
+          float ar = uR.x / uR.y;
+          vec2 p = (vUv - .5) * vec2(ar, 1.);
+          float t = uT * .05;
+          // faisceaux qui dérivent, comme les néons du plafond de l'atelier
+          float beams = fbm(vec2(p.x * 1.9 + t, p.y * .75 - t * .55));
+          beams = pow(beams, 2.4);
+          // halo qui suit le pointeur
+          vec2 m = (uM - .5) * vec2(ar, 1.) * 2.;
+          float glow = smoothstep(1.15, 0., length(p - m)) * .30;
+          float v = beams * .62 + glow;
+          v *= smoothstep(1.4, .2, length(p));          // vignettage
+          v += (hash(vUv * uR + uT) - .5) * .022;        // grain
+          gl_FragColor = vec4(vec3(v), 1.);
+        }`
+    })));
+
+    const fit = () => {
+      const w = host.clientWidth, h = host.clientHeight;
+      rnd.setSize(w, h, false);
+      uni.uR.value.set(w, h);
+    };
+    fit();
+    addEventListener('resize', fit);
+    host.addEventListener('pointermove', ev => {
+      const r = host.getBoundingClientRect();
+      uni.uM.value.set((ev.clientX - r.left) / r.width, 1 - (ev.clientY - r.top) / r.height);
+    });
+
+    // on ne calcule que quand la section est réellement à l'écran
+    const clock = new THREE.Clock();
+    rnd.setAnimationLoop(() => {
+      if (!near(0)) return;                 // hors champ : on ne brûle pas le GPU
+      uni.uT.value = clock.getElapsedTime();
+      rnd.render(scene, cam);
+    });
+  };
+  addEventListener('scroll', boot, { passive: true });
+  boot();
+}
+</script>
+</body>
+</html>
