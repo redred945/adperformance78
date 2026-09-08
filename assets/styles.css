@@ -266,6 +266,17 @@ h3 { font-size: var(--h3); letter-spacing: -.02em; }
 }
 @keyframes shine { to { background-position: -40% 0; } }
 
+/* Titre du hero : les lettres montent depuis sous la ligne.
+   Le masque est porté par le mot (pas la ligne) : à hauteur de ligne
+   égale le rendu est identique, sans avoir à mesurer les retours. */
+.hero h1 .hw {
+  display: inline-block; overflow: hidden; vertical-align: bottom;
+  padding-bottom: .14em; margin-bottom: -.14em;   /* laisse passer les jambages */
+}
+.hero h1 .hc { display: inline-block; transform: translateY(115%); will-change: transform; }
+.hero h1.go .hc { animation: heroRise .82s var(--ease) forwards; }
+@keyframes heroRise { to { transform: translateY(0); } }
+
 .hero-sub {
   margin: var(--sp-4) 0 0; max-width: 44ch;
   font-size: clamp(1.05rem, 1rem + .45vw, 1.28rem); font-weight: 500;
@@ -727,6 +738,7 @@ html.intro-done #neon { display: none; }
   .marque-wrap { overflow-x: auto; scrollbar-width: none; }
   .marque-wrap::-webkit-scrollbar { display: none; }
   .hero h1.shine { animation: none; -webkit-text-fill-color: var(--ink); color: var(--ink); }
+  .hero h1 .hc { transform: none; animation: none; }
   .gitem:hover img { transform: none; }
   html.anim .reveal:not(.in) { opacity: 1; transform: none; }
   html.anim .reveal.in .ticks li,

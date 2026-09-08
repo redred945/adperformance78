@@ -9,6 +9,7 @@
      juste après, puis on retire le calque. ?neon dans l'URL force le rejeu. */
   var NEON_LIFT = 1700;   /* fin de l'animation -> on lève le calque */
   var NEON_KILL = 2160;   /* fin du fondu (.42s) -> on retire du DOM */
+  var introPlayed = false;
   var neon = document.getElementById("neon");
   if (neon) {
     var replay = /[?&]neon\b/.test(location.search);
@@ -21,6 +22,7 @@
     if (seen || reduce) {
       killNeon();
     } else {
+      introPlayed = true;
       docEl.classList.remove("intro-done");
       try { sessionStorage.setItem("adpNeon", "1"); } catch (e) {}
       setTimeout(function () { if (neon) neon.classList.add("lift"); }, NEON_LIFT);
@@ -29,6 +31,41 @@
         window.addEventListener(ev, killNeon, { once: true, passive: true });
       });
     }
+  }
+
+  /* ---------- hero : les lettres du titre montent depuis sous la ligne ----------
+     Découpage maison, sans dépendance. Le texte reste intact pour les
+     lecteurs d'écran via aria-label ; sans JS le titre s'affiche normalement. */
+  try {
+    var h1 = document.querySelector(".hero h1");
+    if (h1 && !reduce) {
+      var full = h1.textContent.replace(/\s+/g, " ").trim();
+      h1.setAttribute("aria-label", full);
+      h1.classList.remove("shine");        /* le dégradé et le découpage ne cohabitent pas */
+      h1.textContent = "";
+      var n = 0;
+      full.split(" ").forEach(function (word, wi, arr) {
+        var w = document.createElement("span");
+        w.className = "hw";
+        w.setAttribute("aria-hidden", "true");
+        for (var i = 0; i < word.length; i++) {
+          var c = document.createElement("span");
+          c.className = "hc";
+          c.textContent = word[i];
+          c.style.animationDelay = (n++ * 14) + "ms";
+          w.appendChild(c);
+        }
+        h1.appendChild(w);
+        if (wi < arr.length - 1) h1.appendChild(document.createTextNode(" "));
+      });
+      /* on démarre pendant que le voile du néon s'efface, sinon tout de suite */
+      setTimeout(function () { h1.classList.add("go"); }, introPlayed ? NEON_LIFT + 250 : 60);
+      /* filet : si le minuteur saute, le titre s'affiche quand même */
+      setTimeout(function () { h1.classList.add("go"); }, 4000);
+    }
+  } catch (e) {
+    var h1f = document.querySelector(".hero h1");
+    if (h1f) h1f.classList.add("go");
   }
 
   /* ---------- reveals : filets de sécurité d'abord ---------- */
