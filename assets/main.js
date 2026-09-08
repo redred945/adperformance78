@@ -17,8 +17,8 @@
       killNeon();
     } else {
       try { sessionStorage.setItem("adpNeon", "1"); } catch (e) {}
-      setTimeout(function () { if (neon) neon.classList.add("lift"); }, 2500);
-      setTimeout(killNeon, 3150);
+      setTimeout(function () { if (neon) neon.classList.add("lift"); }, 3250);
+      setTimeout(killNeon, 3950);
       ["click", "touchstart", "keydown", "wheel"].forEach(function (ev) {
         window.addEventListener(ev, killNeon, { once: true, passive: true });
       });
