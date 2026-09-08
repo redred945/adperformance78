@@ -159,7 +159,7 @@ p { margin: 0; }
 .axis-inner { max-width: var(--wrap); margin: 0 auto; padding: 0 22px; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 1rem + 5vw, 4.5rem); align-items: center; }
 .axis-inner.flip .axis-media { order: 2; }
 .axis-media { margin: 0; }
-.axis-media img { width: 100%; height: clamp(340px, 42vw, 500px); object-fit: cover; object-position: 50% 38%; border-radius: var(--r); border: 1px solid var(--hair); filter: grayscale(.5) contrast(1.04); }
+.axis-media img { width: 100%; height: clamp(360px, 44vw, 560px); object-fit: cover; object-position: 50% 42%; border-radius: var(--r); border: 1px solid var(--hair); filter: contrast(1.03) saturate(1.06); }
 .axis-copy { max-width: none; }
 .axis-copy h2 { margin: .2rem 0 1.1rem; max-width: 22ch; }
 .axis-copy .big-p { max-width: 50ch; }
@@ -197,8 +197,8 @@ p { margin: 0; }
 .gwrap::-webkit-scrollbar { display: none; }
 .gtrack { list-style: none; margin: 0; padding: 4px 0; display: flex; gap: 16px; }
 .gitem { position: relative; flex: 0 0 clamp(258px, 30vw, 320px); border-radius: 14px; overflow: hidden; background: var(--bg-3); border: 1px solid var(--hair); cursor: pointer; aspect-ratio: 3 / 4; scroll-snap-align: start; }
-.gitem img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); filter: grayscale(.3) contrast(1.03); }
-.gitem:hover img { transform: scale(1.04); filter: grayscale(0) contrast(1.03); }
+.gitem img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); filter: contrast(1.03) saturate(1.06); }
+.gitem:hover img { transform: scale(1.04); }
 .gitem::before { content: ""; position: absolute; inset: 0; z-index: 1; border-left: 3px solid var(--accent); transform: translateX(-6px); opacity: 0; transition: transform .3s var(--ease), opacity .3s var(--ease); }
 .gitem:hover::before { transform: translateX(0); opacity: 1; }
 .gitem span { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 2.6rem 1.1rem 1rem; color: #fff; font-weight: 700; font-size: .95rem; display: flex; flex-direction: column; gap: .15rem; background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .88)); }
