@@ -4,29 +4,28 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var anim = !reduce;
 
-  /* ---------- intro : rideau de garage, une seule fois par session ---------- */
-  var shutter = document.getElementById("shutter");
-  if (shutter) {
-    var shutterSeen = false;
-    try { shutterSeen = sessionStorage.getItem("adpShutter") === "1"; } catch (e) {}
-    var glow = document.getElementById("shutterGlow");
-    var killShutter = function () {
-      if (shutter && shutter.parentNode) shutter.parentNode.removeChild(shutter);
-      if (glow && glow.parentNode) glow.parentNode.removeChild(glow);
-      shutter = null; glow = null;
+  /* ---------- intro : le logo qui s'allume (néon), une fois par session ---------- */
+  var neon = document.getElementById("neon");
+  if (neon) {
+    var seen = false;
+    try { seen = sessionStorage.getItem("adpNeon") === "1"; } catch (e) {}
+    var killNeon = function () {
+      if (neon && neon.parentNode) neon.parentNode.removeChild(neon);
+      neon = null;
     };
-    if (shutterSeen || reduce) {
-      killShutter();
+    if (seen || reduce) {
+      killNeon();
     } else {
-      try { sessionStorage.setItem("adpShutter", "1"); } catch (e) {}
-      setTimeout(killShutter, 3100);
+      try { sessionStorage.setItem("adpNeon", "1"); } catch (e) {}
+      setTimeout(function () { if (neon) neon.classList.add("lift"); }, 2500);
+      setTimeout(killNeon, 3150);
       ["click", "touchstart", "keydown", "wheel"].forEach(function (ev) {
-        window.addEventListener(ev, killShutter, { once: true, passive: true });
+        window.addEventListener(ev, killNeon, { once: true, passive: true });
       });
     }
   }
 
-  /* ---------- reveals: safety nets FIRST ---------- */
+  /* ---------- reveals : filets de sécurité d'abord ---------- */
   var reveals = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
   var revealAll = function () { for (var i = 0; i < reveals.length; i++) reveals[i].classList.add("in"); };
   var unlock = function () { docEl.classList.remove("anim"); revealAll(); };
@@ -45,8 +44,6 @@
   setTimeout(function () { window.removeEventListener("error", unlock); }, 8000);
 
   try {
-    var hasGSAP = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
-
     var y = document.getElementById("year");
     if (y) y.textContent = new Date().getFullYear();
 
@@ -72,9 +69,7 @@
       reveals.forEach(function (el) { io.observe(el); });
     }
 
-    /* ---------- compteurs animés (gains chiffrés) ----------
-       Les valeurs finales sont dans le HTML : si rien ne se déclenche,
-       l'affichage reste correct. On ne remet à 0 qu'au moment d'animer. */
+    /* ---------- compteurs animés (gains) — valeurs finales dans le HTML ---------- */
     var nums = Array.prototype.slice.call(document.querySelectorAll(".stat-num[data-to]"));
     var runCount = function (el) {
       var to = parseFloat(el.getAttribute("data-to")) || 0;
@@ -95,13 +90,10 @@
         ents.forEach(function (en) { if (en.isIntersecting) { runCount(en.target); nio.unobserve(en.target); } });
       }, { threshold: 0.55 });
       nums.forEach(function (el) { nio.observe(el); });
-      /* filet global : quoi qu'il arrive, valeurs finales au bout de 4 s */
       setTimeout(function () {
         nums.forEach(function (el) { el.firstChild.nodeValue = el.getAttribute("data-to"); });
       }, 4000);
     }
-
-    if (hasGSAP && anim) { window.gsap.registerPlugin(window.ScrollTrigger); }
   } catch (err) {
     unlock();
   }
@@ -135,7 +127,7 @@
     sync();
   };
 
-  /* ---------- realisations : slider fleches + pastilles ---------- */
+  /* ---------- réalisations : slider flèches + pastilles ---------- */
   var gwrap = document.querySelector(".gallery-slider .gwrap");
   var gtrack = document.getElementById("gtrack");
   var gprev = document.querySelector(".gnav.gprev");
@@ -160,10 +152,39 @@
   }
   if (gwrap) buildDots(gwrap, gitems, document.getElementById("galDots"));
 
-  /* ---------- prestations : carrousel mobile + pastilles ---------- */
-  var craftList = document.querySelector(".craft-list");
-  if (craftList) {
-    buildDots(craftList, Array.prototype.slice.call(craftList.querySelectorAll("li")), document.getElementById("craftDots"));
+  /* ---------- lightbox réalisations ---------- */
+  var items = Array.prototype.slice.call(document.querySelectorAll("#gtrack .gitem"));
+  var lb = document.getElementById("lb");
+  var lbImg = document.getElementById("lbImg");
+  var lbCap = document.getElementById("lbCap");
+  if (lb && lbImg && items.length) {
+    var idx = 0;
+    var open = function (i) {
+      idx = (i + items.length) % items.length;
+      var it = items[idx], im = it.querySelector("img");
+      lbImg.src = im.src; lbImg.alt = im.alt;
+      var cap = it.querySelector("span");
+      lbCap.textContent = cap ? cap.textContent : "";
+      lb.classList.add("open"); lb.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    };
+    var close = function () { lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; };
+    items.forEach(function (it, i) {
+      it.setAttribute("tabindex", "0");
+      it.addEventListener("click", function () { open(i); });
+      it.addEventListener("keydown", function (e) { if (e.key === "Enter") open(i); });
+    });
+    var byId = function (id) { return document.getElementById(id); };
+    if (byId("lbClose")) byId("lbClose").addEventListener("click", close);
+    if (byId("lbPrev")) byId("lbPrev").addEventListener("click", function () { open(idx - 1); });
+    if (byId("lbNext")) byId("lbNext").addEventListener("click", function () { open(idx + 1); });
+    lb.addEventListener("click", function (e) { if (e.target === lb) close(); });
+    window.addEventListener("keydown", function (e) {
+      if (!lb.classList.contains("open")) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowLeft") open(idx - 1);
+      else if (e.key === "ArrowRight") open(idx + 1);
+    });
   }
 
   /* ---------- contact form (no backend) — brouillon e-mail ---------- */
