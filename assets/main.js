@@ -69,31 +69,6 @@
       reveals.forEach(function (el) { io.observe(el); });
     }
 
-    /* ---------- compteurs animés (gains) — valeurs finales dans le HTML ---------- */
-    var nums = Array.prototype.slice.call(document.querySelectorAll(".stat-num[data-to]"));
-    var runCount = function (el) {
-      var to = parseFloat(el.getAttribute("data-to")) || 0;
-      var dur = 1100, start = null;
-      var snap = setTimeout(function () { el.firstChild.nodeValue = String(to); }, 1500);
-      el.firstChild.nodeValue = "0";
-      var frame = function (t) {
-        if (start === null) start = t;
-        var p = Math.min((t - start) / dur, 1);
-        el.firstChild.nodeValue = String(Math.round(to * (1 - Math.pow(1 - p, 3))));
-        if (p < 1) { requestAnimationFrame(frame); }
-        else { clearTimeout(snap); el.firstChild.nodeValue = String(to); }
-      };
-      requestAnimationFrame(frame);
-    };
-    if (nums.length && anim && "IntersectionObserver" in window && typeof requestAnimationFrame === "function") {
-      var nio = new IntersectionObserver(function (ents) {
-        ents.forEach(function (en) { if (en.isIntersecting) { runCount(en.target); nio.unobserve(en.target); } });
-      }, { threshold: 0.55 });
-      nums.forEach(function (el) { nio.observe(el); });
-      setTimeout(function () {
-        nums.forEach(function (el) { el.firstChild.nodeValue = el.getAttribute("data-to"); });
-      }, 4000);
-    }
   } catch (err) {
     unlock();
   }
