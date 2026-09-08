@@ -160,7 +160,7 @@ p { margin: 0; }
 .axis-inner { max-width: var(--wrap); margin: 0 auto; padding: 0 22px; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 1rem + 5vw, 4.5rem); align-items: center; }
 .axis-inner.flip .axis-media { order: 2; }
 .axis-media { margin: 0; }
-.axis-media img { width: 100%; height: clamp(360px, 44vw, 560px); object-fit: cover; object-position: 50% 42%; border-radius: var(--r); border: 1px solid var(--hair); filter: contrast(1.03) saturate(1.06); }
+.axis-media img { width: 100%; aspect-ratio: 3 / 4; height: auto; object-fit: cover; border-radius: var(--r); border: 1px solid var(--hair); filter: contrast(1.03) saturate(1.06); }
 .axis-copy { max-width: none; }
 .axis-copy h2 { margin: .2rem 0 1.1rem; max-width: 22ch; }
 .axis-copy .big-p { max-width: 50ch; }
