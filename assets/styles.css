@@ -750,3 +750,163 @@ html.intro-done #neon { display: none; }
     scroll-behavior: auto !important;
   }
 }
+
+/* =============================================================
+   20. MOUVEMENT — Lenis · GSAP · turbo 3D
+   Tout est additif : sans JS / avec « réduire les animations »,
+   la page reste la version statique ci-dessus.
+   ============================================================= */
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: clip; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* barre de lecture */
+.pbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 250; height: 2px;
+  transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+  background: var(--accent); box-shadow: 0 0 12px rgba(255, 255, 255, .7);
+}
+
+/* états de départ (posés dès le <head> : pas de flash avant que GSAP prenne la main) */
+html.m .hero-bg { transform: scale(1.2); will-change: transform; }
+html.m .hero .eyebrow, html.m .hero-sub, html.m .hero-links { opacity: 0; visibility: hidden; }
+
+/* bandeau marques piloté en JS (vitesse de scroll) */
+html.marq-js .marque-track { animation: none; will-change: transform; }
+
+/* titres découpés : le masque laisse passer les jambages */
+.sl-mask { padding-bottom: .14em; margin-bottom: -.14em; }
+
+/* photos : le cadre porte le rayon, l'image bouge dedans */
+html.m-ok .axis-media { border-radius: var(--r-lg); overflow: hidden; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9); }
+html.m-ok .axis-media img { border: 0; border-radius: 0; box-shadow: none; will-change: transform; }
+html.m-ok .axis-media::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+}
+
+/* cartes réalisations : le tilt passe par GSAP, pas par une transition CSS */
+html.m-ok .gitem { will-change: transform; transform-style: preserve-3d; }
+.gitem::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, .17), transparent 62%);
+  opacity: 0; transition: opacity var(--t-mid) var(--ease);
+}
+@media (hover: hover) { .gitem:hover::after { opacity: 1; } }
+
+/* CTA : la lampe suit le pointeur */
+html.m .cta::after {
+  background:
+    radial-gradient(46% 100% at var(--mx, 12%) var(--my, 46%), rgba(255,255,255,.085), transparent 66%),
+    radial-gradient(70% 140% at 4% 50%, rgba(255,255,255,.035), transparent 72%);
+}
+
+/* boutons magnétiques : plus de transition CSS sur transform */
+html.m .btn {
+  transition: background var(--t-fast) var(--ease), box-shadow var(--t-mid) var(--ease);
+}
+
+/* ---------- Sous le capot : version statique (par défaut) ---------- */
+.boost { position: relative; background: var(--s-0); }
+.boost::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 1px; pointer-events: none; z-index: 3;
+  background: linear-gradient(90deg, transparent, var(--line-2) 22%, var(--line-2) 78%, transparent);
+}
+.boost-view { display: none; }
+.boost-view canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s var(--ease); }
+.boost-view canvas.ready { opacity: 1; }
+.boost-pin { max-width: var(--wrap); margin: 0 auto; padding: var(--sp-section) var(--gutter); }
+.boost-copy h2 { max-width: 17ch; margin-bottom: var(--sp-6); }
+.boost-steps { list-style: none; margin: 0 0 var(--sp-6); padding: 0; display: grid; gap: var(--sp-6); }
+.boost-steps li { padding-left: var(--sp-5); border-left: 1px solid var(--line-2); }
+.bs-k {
+  display: block; margin-bottom: var(--sp-2);
+  font-family: var(--mono); font-size: var(--fs-micro); font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3);
+}
+.boost-steps h3 { margin-bottom: var(--sp-2); font-size: clamp(1.25rem, 1.05rem + .8vw, 1.6rem); }
+.boost-steps p { color: var(--ink-2); max-width: 46ch; }
+.boost-gauge, .boost-cue { display: none; }
+.bg-bar { position: relative; height: 3px; border-radius: 3px; background: var(--line-2); overflow: hidden; }
+.bg-bar i {
+  position: absolute; inset: 0; background: var(--accent);
+  transform-origin: 0 50%; transform: scaleX(0);
+  box-shadow: 0 0 14px rgba(255, 255, 255, .8);
+}
+.bg-marks {
+  display: flex; justify-content: space-between; margin-top: var(--sp-3);
+  font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.boost .disclaim { margin-top: var(--sp-5); }
+
+/* rendu 3D fixe (mouvement réduit) : une image posée au-dessus du texte */
+html.boost-still .boost-view {
+  display: block; position: relative; aspect-ratio: 16 / 10; max-height: 60vh; margin-bottom: var(--sp-6);
+  border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden;
+}
+
+/* ---------- Sous le capot : mode scène épinglée ---------- */
+html.m:not(.boost-flat) .boost { height: 480vh; }
+html.m:not(.boost-flat) .boost-pin {
+  position: sticky; top: 0; height: 100vh; height: 100svh;
+  max-width: none; padding: 0; overflow: hidden;
+}
+html.m:not(.boost-flat) .boost-view { display: block; position: absolute; inset: 0; }
+/* la copie reste lisible : voile à gauche, la roue respire à droite */
+html.m:not(.boost-flat) .boost-view::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(8,9,11,.9) 0%, rgba(8,9,11,.55) 34%, rgba(8,9,11,0) 58%),
+    radial-gradient(120% 90% at 60% 50%, transparent 60%, rgba(8,9,11,.7) 100%);
+}
+html.m:not(.boost-flat) .boost-hud {
+  position: relative; z-index: 2; height: 100%; pointer-events: none;
+  max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter);
+  display: flex; align-items: center;
+}
+html.m:not(.boost-flat) .boost-copy { width: min(31rem, 46%); }
+html.m:not(.boost-flat) .boost-copy h2 { margin-bottom: var(--sp-5); font-size: clamp(1.7rem, 1.1rem + 2vw, 2.6rem); }
+html.m:not(.boost-flat) .boost-steps { position: relative; display: block; height: 13rem; margin-bottom: var(--sp-5); }
+html.m:not(.boost-flat) .boost-steps li {
+  position: absolute; inset: 0 0 auto 0;
+  opacity: 0; transform: translateY(26px); filter: blur(8px);
+  transition: opacity .55s var(--ease), transform .75s var(--ease), filter .55s var(--ease);
+}
+html.m:not(.boost-flat) .boost-steps li.on { opacity: 1; transform: none; filter: none; }
+html.m:not(.boost-flat) .boost-steps li.past { transform: translateY(-26px); }
+html.m:not(.boost-flat) .boost-gauge { display: block; }
+html.m:not(.boost-flat) .boost-cue {
+  display: block; position: absolute; z-index: 2; left: 50%; bottom: 18px; transform: translateX(-50%);
+  font-family: var(--mono); font-size: var(--fs-micro); letter-spacing: .22em; text-transform: uppercase; color: var(--ink-3);
+  pointer-events: none;
+}
+html.m:not(.boost-flat) .boost-cue::after {
+  content: ""; display: block; width: 1px; height: 26px; margin: 8px auto 0;
+  background: linear-gradient(var(--accent), transparent); transform-origin: 50% 0;
+  animation: cue 2s var(--ease-io) infinite;
+}
+@keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+@media (max-width: 800px) {
+  html.m:not(.boost-flat) .boost { height: 440vh; }
+  html.m:not(.boost-flat) .boost-view::after {
+    background: linear-gradient(180deg, rgba(8,9,11,.82) 0%, rgba(8,9,11,0) 26%, rgba(8,9,11,0) 44%, rgba(8,9,11,.92) 68%);
+  }
+  html.m:not(.boost-flat) .boost-hud { align-items: stretch; padding-top: 86px; padding-bottom: 22px; }
+  html.m:not(.boost-flat) .boost-copy { width: 100%; display: flex; flex-direction: column; }
+  html.m:not(.boost-flat) .boost-copy h2 { font-size: clamp(1.45rem, 6.4vw, 1.9rem); margin-bottom: 0; }
+  html.m:not(.boost-flat) .boost-steps { margin-top: auto; height: 11.5rem; margin-bottom: var(--sp-4); }
+  html.m:not(.boost-flat) .boost-steps h3 { font-size: 1.15rem; }
+  html.m:not(.boost-flat) .boost-steps p { font-size: var(--fs-sm); }
+  html.m:not(.boost-flat) .boost .disclaim,
+  html.m:not(.boost-flat) .boost-cue { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pbar, .boost-cue { display: none !important; }
+}

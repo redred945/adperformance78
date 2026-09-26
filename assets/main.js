@@ -11,6 +11,7 @@
   var NEON_KILL = 2160;   /* fin du fondu (.42s) -> on retire du DOM */
   var introPlayed = false;
   var neon = document.getElementById("neon");
+  window.ADP = { neonLift: NEON_LIFT, introPlayed: false };
   if (neon) {
     var replay = /[?&]neon\b/.test(location.search);
     var seen = false;
@@ -23,6 +24,7 @@
       killNeon();
     } else {
       introPlayed = true;
+      window.ADP.introPlayed = true;
       docEl.classList.remove("intro-done");
       try { sessionStorage.setItem("adpNeon", "1"); } catch (e) {}
       setTimeout(function () { if (neon) neon.classList.add("lift"); }, NEON_LIFT);
@@ -185,8 +187,12 @@
       lbCap.textContent = cap ? cap.textContent : "";
       lb.classList.add("open"); lb.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      window.dispatchEvent(new Event("adp:lock"));
     };
-    var close = function () { lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = ""; };
+    var close = function () {
+      lb.classList.remove("open"); lb.setAttribute("aria-hidden", "true"); document.body.style.overflow = "";
+      window.dispatchEvent(new Event("adp:unlock"));
+    };
     items.forEach(function (it, i) {
       it.setAttribute("tabindex", "0");
       it.addEventListener("click", function () { open(i); });

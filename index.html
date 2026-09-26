@@ -23,7 +23,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/styles.css?v=17" />
+<link rel="stylesheet" href="assets/styles.css?v=23" />
+<script>try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("m");setTimeout(function(){if(!d.classList.contains("m-ok"))d.classList.remove("m")},4500)}}catch(e){}</script>
 <script>try{var r=/[?&]neon\b/.test(location.search);if((!r&&sessionStorage.getItem("adpNeon")==="1")||matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro-done")}catch(e){}</script>
 <script type="application/ld+json">
 {
@@ -87,6 +88,42 @@
     </div>
   </div>
 </div>
+
+<!-- ===================== SOUS LE CAPOT · TURBO 3D ===================== -->
+<section class="boost" id="boost" aria-labelledby="boost-title">
+  <div class="boost-pin">
+    <div class="boost-view" aria-hidden="true"><canvas id="turbo"></canvas></div>
+    <div class="boost-hud">
+      <div class="boost-copy">
+        <p class="eyebrow">Sous le capot</p>
+        <h2 id="boost-title">Un turbo qui respire mieux. Tout le reste suit.</h2>
+        <ol class="boost-steps" id="boostSteps">
+          <li class="on">
+            <span class="bs-k">01 · Origine</span>
+            <h3>Le réglage d'usine</h3>
+            <p>Une cartographie constructeur, calée pour la marge et l'homologation. Le turbo travaille bien en deçà de ce que le matériel sait encaisser.</p>
+          </li>
+          <li>
+            <span class="bs-k">02 · Stage 1</span>
+            <h3>Le même matériel, réécrit pour lui</h3>
+            <p>Pression de suralimentation, avance, richesse : recalées sur votre moteur, avec relevé et passage au banc. Cartographie d'origine toujours sauvegardée.</p>
+          </li>
+          <li>
+            <span class="bs-k">03 · Stage 2+</span>
+            <h3>On monte d'un cran, on valide tout</h3>
+            <p>Admission, ligne, turbo hybride (TTE), E85 : la cartographie suit le matériel, et le banc valide chaque étape avant restitution.</p>
+          </li>
+        </ol>
+        <div class="boost-gauge" aria-hidden="true">
+          <div class="bg-bar"><i id="boostFill"></i></div>
+          <div class="bg-marks"><span>Origine</span><span>Stage 1</span><span>Stage 2+</span></div>
+        </div>
+        <p class="disclaim">Illustration. Les gains réels sont relevés au banc, au cas par cas, selon le modèle, le carburant et l'état mécanique.</p>
+      </div>
+    </div>
+    <p class="boost-cue" aria-hidden="true">Faites défiler</p>
+  </div>
+</section>
 
 <!-- ===================== 01 · ENTRETIEN ===================== -->
 <section class="axis" id="entretien">
@@ -225,6 +262,11 @@
   <p class="lb-cap" id="lbCap"></p>
 </div>
 
-<script src="assets/main.js?v=17" defer></script>
+<script src="assets/vendor/gsap.min.js" defer></script>
+<script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+<script src="assets/vendor/SplitText.min.js" defer></script>
+<script src="assets/vendor/lenis.min.js" defer></script>
+<script src="assets/main.js?v=23" defer></script>
+<script src="assets/motion.js?v=23" defer></script>
 </body>
 </html>
